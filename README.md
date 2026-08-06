@@ -37,6 +37,8 @@ The test suite covers all flower matching rules, tie breakers, enquiry reference
 4. Run migrations explicitly before switching traffic.
 5. Run `./scripts/publish.sh --check`, then `./scripts/publish.sh "Deployment message"`.
 
+On the configured 1Panel server, initial database/environment/Nginx setup can be completed once with `sudo ./scripts/configure-production.sh`. It preserves an existing `.env`, skips seeded schema replay when tables already exist, backs up the site configuration, validates OpenResty before restarting, and never prints generated secrets.
+
 The publish script targets `/opt/1panel/www/sites/ckflorist.my/index`, refuses dirty server deployments, pulls with `--ff-only`, and restarts OpenResty and PHP8.
 
 ## Phase record
@@ -53,4 +55,3 @@ The publish script targets `/opt/1panel/www/sites/ckflorist.my/index`, refuses d
 - Hardening: output escaping, CSRF, CSP/security headers, secure sessions, responsive images, settings cache, pagination, reduced-motion and focus support
 
 Generated project imagery was created with the built-in image generation workflow and saved as optimized responsive WebP assets under `public/assets/images`.
-
