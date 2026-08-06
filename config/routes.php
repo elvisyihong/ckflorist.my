@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Controllers\Admin\AuthController as AdminAuthController;
 use App\Controllers\Admin\DashboardController;
 use App\Controllers\Admin\EnquiryController as AdminEnquiryController;
+use App\Controllers\Admin\MaintenanceController as AdminMaintenanceController;
 use App\Controllers\Admin\ResourceController;
 use App\Controllers\Admin\SettingsController;
 use App\Controllers\Admin\UploadController;
@@ -43,6 +44,8 @@ return static function (Router $router): void {
     $router->get('/admin', [DashboardController::class, 'index'], ['permission' => 'admin.view']);
     $router->get('/admin/settings', [SettingsController::class, 'edit'], ['permission' => 'settings.manage']);
     $router->post('/admin/settings', [SettingsController::class, 'update'], ['permission' => 'settings.manage']);
+    $router->get('/admin/maintenance', [AdminMaintenanceController::class, 'edit'], ['permission' => 'settings.manage']);
+    $router->post('/admin/maintenance', [AdminMaintenanceController::class, 'update'], ['permission' => 'settings.manage']);
     $router->post('/admin/uploads', [UploadController::class, 'store'], ['permission' => 'catalogue.manage']);
     $router->get('/admin/enquiries', [AdminEnquiryController::class, 'index'], ['permission' => 'enquiries.manage']);
     $router->get('/admin/enquiries/{id:[0-9]+}', [AdminEnquiryController::class, 'show'], ['permission' => 'enquiries.manage']);

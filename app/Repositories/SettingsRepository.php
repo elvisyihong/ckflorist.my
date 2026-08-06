@@ -48,14 +48,16 @@ final class SettingsRepository
 
     public function save(array $input, int $userId): void
     {
-        $allowed = ['business_name','logo','favicon','whatsapp_number','telephone','email','address','google_maps_url','map_embed','business_hours','social_links','currency','delivery_information','pickup_information','florist_disclaimer','cancellation_policy','terms','privacy_policy','allow_combined_enquiries'];
+        $allowed = ['business_name','logo','favicon','whatsapp_number','telephone','email','address','google_maps_url','map_embed','business_hours','social_links','currency','delivery_information','pickup_information','florist_disclaimer','cancellation_policy','terms','privacy_policy','allow_combined_enquiries','maintenance_mode','maintenance_title','maintenance_message','maintenance_menu_images'];
+        $jsonKeys = ['business_hours', 'social_links', 'maintenance_menu_images'];
+        $booleanKeys = ['allow_combined_enquiries', 'maintenance_mode'];
         $statement = Database::connection()->prepare('INSERT INTO shop_settings (setting_key, setting_value, value_type, is_public, updated_by) VALUES (:key, :value, :type, 1, :user) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), value_type = VALUES(value_type), updated_by = VALUES(updated_by)');
         foreach ($allowed as $key) {
             if (!array_key_exists($key, $input)) {
                 continue;
             }
             $value = $input[$key];
-            $type = in_array($key, ['business_hours','social_links'], true) ? 'json' : ($key === 'allow_combined_enquiries' ? 'boolean' : (mb_strlen((string) $value) > 190 ? 'text' : 'string'));
+            $type = in_array($key, $jsonKeys, true) ? 'json' : (in_array($key, $booleanKeys, true) ? 'boolean' : (mb_strlen((string) $value) > 190 ? 'text' : 'string'));
             if ($type === 'json') {
                 $value = json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
             }

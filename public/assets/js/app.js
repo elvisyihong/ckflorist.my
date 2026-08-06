@@ -265,6 +265,107 @@
     });
   }
 
+  function initMaintenanceAdmin() {
+    const form = $('[data-maintenance-form]');
+    if (!form) return;
+
+    const input = $('[data-maintenance-upload]', form);
+    const label = $('[data-maintenance-upload-label]', form);
+    const status = $('[data-maintenance-upload-status]', form);
+    const list = $('[data-maintenance-image-list]', form);
+    const ids = $('[data-maintenance-image-ids]', form);
+    const empty = $('[data-maintenance-empty]', form);
+
+    function sync() {
+      const items = $$('[data-maintenance-image]', list);
+      ids.value = JSON.stringify(items.map((item) => Number(item.dataset.mediaId)));
+      empty.hidden = items.length > 0;
+      items.forEach((item, index) => {
+        $('[data-maintenance-position]', item).textContent = String(index + 1);
+        $('[data-menu-up]', item).disabled = index === 0;
+        $('[data-menu-down]', item).disabled = index === items.length - 1;
+      });
+    }
+
+    function addImage(media, altText) {
+      const item = document.createElement('article');
+      item.className = 'maintenance-image-item';
+      item.dataset.maintenanceImage = '';
+      item.dataset.mediaId = String(media.id);
+
+      const image = document.createElement('img');
+      image.src = media.thumbnail || media.path;
+      image.alt = altText;
+
+      const detail = document.createElement('div');
+      const title = document.createElement('strong');
+      title.append('Menu page ');
+      const position = document.createElement('span');
+      position.dataset.maintenancePosition = '';
+      title.appendChild(position);
+      const caption = document.createElement('small');
+      caption.textContent = altText;
+      detail.append(title, caption);
+
+      const actions = document.createElement('div');
+      actions.className = 'maintenance-image-actions';
+      [['↑', 'menuUp', 'Move menu page up'], ['↓', 'menuDown', 'Move menu page down'], ['Remove', 'menuRemove', 'Remove menu page']].forEach(([text, key, aria]) => {
+        const button = document.createElement('button');
+        button.className = 'button button-small button-outline';
+        button.type = 'button';
+        button.textContent = text;
+        button.dataset[key] = '';
+        button.setAttribute('aria-label', aria);
+        actions.appendChild(button);
+      });
+
+      item.append(image, detail, actions);
+      list.appendChild(item);
+      sync();
+    }
+
+    input.addEventListener('change', async () => {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+      input.disabled = true;
+      label.setAttribute('aria-disabled', 'true');
+      let uploaded = 0;
+      try {
+        for (const file of files) {
+          status.textContent = `Uploading ${uploaded + 1} of ${files.length}…`;
+          const body = new FormData();
+          const altText = `CK Florist menu — ${file.name.replace(/\.[^.]+$/, '')}`;
+          body.append('image', file);
+          body.append('alt_text', altText);
+          const media = await api('/admin/uploads', { method: 'POST', body });
+          addImage(media, altText);
+          uploaded += 1;
+        }
+        status.textContent = `${uploaded} menu ${uploaded === 1 ? 'image' : 'images'} uploaded. Save to publish this order.`;
+        toast('Menu images uploaded. Save the maintenance settings when ready.');
+      } catch (error) {
+        status.textContent = error.message;
+        toast(error.message, 'error');
+      } finally {
+        input.value = '';
+        input.disabled = false;
+        label.removeAttribute('aria-disabled');
+      }
+    });
+
+    list.addEventListener('click', (event) => {
+      const button = event.target.closest('button');
+      const item = button?.closest('[data-maintenance-image]');
+      if (!button || !item) return;
+      if (button.matches('[data-menu-up]') && item.previousElementSibling) item.previousElementSibling.before(item);
+      if (button.matches('[data-menu-down]') && item.nextElementSibling) item.nextElementSibling.after(item);
+      if (button.matches('[data-menu-remove]')) item.remove();
+      sync();
+    });
+
+    sync();
+  }
+
   function initMotion() {
     if (!window.gsap || !window.ScrollTrigger || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     window.gsap.registerPlugin(window.ScrollTrigger);
@@ -288,6 +389,7 @@
   initCafe();
   initBuilder();
   initSelection();
+  initMaintenanceAdmin();
   initMotion();
   if (window.ckfFlash) toast(window.ckfFlash.message, window.ckfFlash.type);
 })();

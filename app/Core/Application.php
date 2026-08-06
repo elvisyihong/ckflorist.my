@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Controllers\MaintenanceController;
+use App\Repositories\SettingsRepository;
+use App\Services\MaintenanceMode;
 use ReflectionClass;
 use ReflectionNamedType;
 use Throwable;
@@ -31,8 +34,14 @@ final class Application
 
     public function run(): void
     {
+        $request = Request::capture();
         try {
-            $this->router->dispatch(Request::capture());
+            $settings = $this->make(SettingsRepository::class)->all();
+            if ($this->make(MaintenanceMode::class)->shouldIntercept($request->path(), $settings)) {
+                $this->make(MaintenanceController::class)->show($request);
+                return;
+            }
+            $this->router->dispatch($request);
         } catch (Throwable $exception) {
             $requestId = bin2hex(random_bytes(6));
             error_log(sprintf('[%s] %s in %s:%d', $requestId, $exception->getMessage(), $exception->getFile(), $exception->getLine()));

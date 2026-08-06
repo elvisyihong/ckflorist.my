@@ -16,6 +16,10 @@ final class DemoData
             'address' => 'Brunei Darussalam',
             'currency' => 'BND',
             'allow_combined_enquiries' => true,
+            'maintenance_mode' => false,
+            'maintenance_title' => 'Our menu is available',
+            'maintenance_message' => 'Browse our current menu while we prepare the full website.',
+            'maintenance_menu_images' => [],
             'business_hours' => ['Monday–Saturday' => '9:00 AM–6:00 PM', 'Sunday' => 'By appointment'],
             'florist_disclaimer' => 'Sample photos are references. Flower availability and exact shades may vary, and final pricing requires confirmation.',
             'delivery_information' => 'Delivery availability and fees are confirmed after reviewing your enquiry.',
@@ -123,4 +127,3 @@ final class DemoData
         ], $names, array_keys($names));
     }
 }
-
