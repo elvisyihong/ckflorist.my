@@ -57,12 +57,30 @@ final class CatalogueRepository
 
     public function cafeCategories(): array { return $this->simple('cafe_categories', DemoData::cafeCategories()); }
 
+    public function promotionalBanners(): array
+    {
+        if (!Database::available()) {
+            return [];
+        }
+
+        return Database::connection()->query(
+            "SELECT b.*, CONCAT('/', m.path) image
+             FROM promotional_banners b
+             LEFT JOIN media m ON m.id = b.image_id
+             WHERE b.is_active = 1
+               AND (b.starts_at IS NULL OR b.starts_at <= UTC_TIMESTAMP())
+               AND (b.ends_at IS NULL OR b.ends_at >= UTC_TIMESTAMP())
+             ORDER BY b.display_order, b.created_at DESC
+             LIMIT 8"
+        )->fetchAll();
+    }
+
     public function cafeProducts(): array
     {
         if (!Database::available()) {
             return DemoData::cafeProducts();
         }
-        $rows = Database::connection()->query("SELECT p.*, c.name category_name, m.path cover_image FROM cafe_products p JOIN cafe_categories c ON c.id = p.category_id LEFT JOIN media m ON m.id = p.cover_image_id WHERE p.is_available = 1 AND c.is_active = 1 ORDER BY c.display_order, p.is_featured DESC, p.display_order")->fetchAll();
+        $rows = Database::connection()->query("SELECT p.*, c.name category_name, c.slug category_slug, m.path cover_image FROM cafe_products p JOIN cafe_categories c ON c.id = p.category_id LEFT JOIN media m ON m.id = p.cover_image_id WHERE p.is_available = 1 AND c.is_active = 1 ORDER BY c.display_order, p.is_featured DESC, p.display_order")->fetchAll();
         $optionStatement = Database::connection()->prepare('SELECT id, option_group, name, price_adjustment, is_default FROM cafe_product_options WHERE product_id = :id AND is_available = 1 ORDER BY option_group, display_order');
         foreach ($rows as &$row) {
             $row['dietary_labels'] = json_decode((string) ($row['dietary_labels'] ?? '[]'), true) ?: [];
@@ -124,4 +142,3 @@ final class CatalogueRepository
         return $samples;
     }
 }
-

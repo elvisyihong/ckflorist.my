@@ -81,6 +81,7 @@ return [
         'fields' => [
             'category_id' => ['label' => 'Category ID', 'type' => 'number', 'required' => true], 'name' => ['label' => 'Name', 'required' => true, 'max' => 160],
             'slug' => ['label' => 'Slug', 'required' => true, 'max' => 180], 'description' => ['label' => 'Description', 'type' => 'textarea', 'required' => true],
+            'cover_image_id' => ['label' => 'Cover media ID', 'type' => 'number'],
             'regular_price' => ['label' => 'Regular price', 'type' => 'number', 'required' => true], 'promotional_price' => ['label' => 'Promotional price', 'type' => 'number'],
             'dietary_labels' => ['label' => 'Dietary labels JSON', 'type' => 'textarea'], 'is_available' => ['label' => 'Available', 'type' => 'checkbox'],
             'is_featured' => ['label' => 'Featured', 'type' => 'checkbox'], 'display_order' => ['label' => 'Display order', 'type' => 'number'],
@@ -96,7 +97,7 @@ return [
     ],
     'banners' => [
         'label' => 'Promotional banners', 'table' => 'promotional_banners', 'list' => ['title', 'starts_at', 'ends_at', 'is_active'], 'order' => 'display_order, id DESC',
-        'fields' => ['title' => ['label' => 'Title', 'required' => true], 'body' => ['label' => 'Body', 'type' => 'textarea'], 'link_url' => ['label' => 'Link URL'], 'link_label' => ['label' => 'Link label'], 'starts_at' => ['label' => 'Starts at'], 'ends_at' => ['label' => 'Ends at'], 'display_order' => ['label' => 'Display order', 'type' => 'number'], 'is_active' => ['label' => 'Active', 'type' => 'checkbox']],
+        'fields' => ['title' => ['label' => 'Title', 'required' => true], 'body' => ['label' => 'Body', 'type' => 'textarea'], 'image_id' => ['label' => 'Banner media ID', 'type' => 'number'], 'link_url' => ['label' => 'Link URL'], 'link_label' => ['label' => 'Link label'], 'starts_at' => ['label' => 'Starts at'], 'ends_at' => ['label' => 'Ends at'], 'display_order' => ['label' => 'Display order', 'type' => 'number'], 'is_active' => ['label' => 'Active', 'type' => 'checkbox']],
     ],
     'gallery' => [
         'label' => 'Gallery', 'table' => 'gallery_items', 'list' => ['media_id', 'title', 'display_order', 'is_active'], 'order' => 'display_order, id DESC',

@@ -58,18 +58,58 @@
   }));
 
   function initCafe() {
+    const root = $('[data-cafe-menu]');
     const sheet = $('[data-product-sheet]');
-    if (!sheet) return;
+    if (!root || !sheet) return;
     const form = $('[data-product-form]', sheet);
-    $$('[data-open-product]').forEach((button) => button.addEventListener('click', () => {
-      const product = JSON.parse(button.dataset.openProduct);
+    const cards = $$('[data-cafe-card]', root);
+    const search = $('[data-cafe-search]', root);
+    const resultCount = $('[data-cafe-result-count]', root);
+    const emptyState = $('[data-cafe-empty]', root);
+    let activeCategory = 'all';
+    let currentProduct = null;
+
+    const money = (value) => `BND ${Number(value || 0).toFixed(2)}`;
+    const groupLabel = (value) => value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+    function updateTotal() {
+      if (!currentProduct) return;
+      const basePrice = Number(currentProduct.promotional_price ?? currentProduct.regular_price);
+      const extras = $$('input:checked', $('[data-product-options]', sheet)).reduce((total, input) => total + Number(input.dataset.priceAdjustment || 0), 0);
+      const quantity = Math.max(1, Number(form.elements.quantity.value || 1));
+      $('[data-product-total-price]', sheet).textContent = money((basePrice + extras) * quantity);
+    }
+
+    function openProduct(product) {
+      currentProduct = product;
       form.reset();
+      form.elements.quantity.value = 1;
       form.elements.product_id.value = product.id;
       $('[data-product-name]', sheet).textContent = product.name;
-      $('[data-product-description]', sheet).textContent = product.description;
+      $('[data-product-category]', sheet).textContent = product.category_name || 'CK Florist Café';
+      $('[data-product-description]', sheet).textContent = product.description || 'Prepared fresh for you.';
       const image = $('[data-product-image]', sheet);
       image.src = product.cover_image || '/public/assets/images/cafe-900.webp';
       image.alt = product.name;
+
+      const currentPrice = Number(product.promotional_price ?? product.regular_price);
+      const regularPrice = $('[data-product-regular-price]', sheet);
+      $('[data-product-price]', sheet).textContent = money(currentPrice);
+      regularPrice.textContent = money(product.regular_price);
+      regularPrice.hidden = product.promotional_price === null || product.promotional_price === '';
+
+      const label = $('[data-product-label]', sheet);
+      label.textContent = product.promotional_price !== null && product.promotional_price !== '' ? 'Offer' : (Number(product.is_featured) ? 'Popular' : '');
+      label.hidden = label.textContent === '';
+
+      const dietary = $('[data-product-dietary]', sheet);
+      dietary.replaceChildren();
+      (product.dietary_labels || []).forEach((item) => {
+        const badge = document.createElement('span');
+        badge.textContent = item;
+        dietary.appendChild(badge);
+      });
+
       const options = $('[data-product-options]', sheet);
       options.replaceChildren();
       const groups = Object.groupBy ? Object.groupBy(product.options || [], (option) => option.option_group) : (product.options || []).reduce((result, option) => { (result[option.option_group] ||= []).push(option); return result; }, {});
@@ -77,7 +117,7 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'option-group';
         const title = document.createElement('strong');
-        title.textContent = group.charAt(0).toUpperCase() + group.slice(1);
+        title.textContent = groupLabel(group);
         wrapper.appendChild(title);
         const grid = document.createElement('div');
         grid.className = 'option-group-grid';
@@ -87,7 +127,8 @@
           input.type = group === 'addon' ? 'checkbox' : 'radio';
           input.name = group === 'addon' ? 'option_ids[]' : `option_${group}`;
           input.value = option.id;
-          if (group !== 'addon' && index === 0) input.checked = true;
+          input.dataset.priceAdjustment = option.price_adjustment || 0;
+          if (group !== 'addon' && (Number(option.is_default) === 1 || (index === 0 && !items.some((item) => Number(item.is_default) === 1)))) input.checked = true;
           const text = document.createElement('span');
           text.textContent = option.name + (Number(option.price_adjustment) > 0 ? ` +BND ${Number(option.price_adjustment).toFixed(2)}` : '');
           label.append(input, text);
@@ -96,8 +137,60 @@
         wrapper.appendChild(grid);
         options.appendChild(wrapper);
       });
+      sheet.scrollTop = 0;
       sheet.showModal();
+      updateTotal();
+    }
+
+    $$('[data-open-product]').forEach((button) => button.addEventListener('click', () => {
+      try { openProduct(JSON.parse(button.dataset.openProduct)); }
+      catch (error) { toast('This item could not be opened. Please refresh and try again.', 'error'); }
     }));
+
+    function filterProducts() {
+      const query = (search?.value || '').trim().toLowerCase();
+      let visible = 0;
+      cards.forEach((card) => {
+        const categoryMatch = activeCategory === 'all' || card.dataset.category === activeCategory;
+        const searchMatch = !query || (card.dataset.search || '').includes(query);
+        card.hidden = !(categoryMatch && searchMatch);
+        if (!card.hidden) visible += 1;
+      });
+      if (resultCount) resultCount.textContent = `${visible} ${visible === 1 ? 'item' : 'items'}`;
+      if (emptyState) emptyState.hidden = visible !== 0;
+    }
+
+    $$('[data-cafe-category]', root).forEach((button) => button.addEventListener('click', () => {
+      activeCategory = button.dataset.cafeCategory;
+      $$('[data-cafe-category]', root).forEach((item) => item.classList.toggle('is-active', item === button));
+      filterProducts();
+    }));
+    search?.addEventListener('input', filterProducts);
+
+    const offerTrack = $('[data-offer-track]', root);
+    const offerSlides = $$('[data-offer-slide]', root);
+    const offerDots = $$('[data-offer-dot]', root);
+    offerDots.forEach((dot) => dot.addEventListener('click', () => offerSlides[Number(dot.dataset.offerDot)]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' })));
+    let scrollFrame = 0;
+    offerTrack?.addEventListener('scroll', () => {
+      window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = window.requestAnimationFrame(() => {
+        const trackLeft = offerTrack.getBoundingClientRect().left;
+        const closest = offerSlides.reduce((best, slide, index) => Math.abs(slide.getBoundingClientRect().left - trackLeft) < best.distance ? { index, distance: Math.abs(slide.getBoundingClientRect().left - trackLeft) } : best, { index: 0, distance: Infinity });
+        offerDots.forEach((dot, index) => dot.classList.toggle('is-active', index === closest.index));
+      });
+    }, { passive: true });
+
+    $('[data-quantity-minus]', sheet)?.addEventListener('click', () => {
+      form.elements.quantity.value = Math.max(1, Number(form.elements.quantity.value) - 1);
+      updateTotal();
+    });
+    $('[data-quantity-plus]', sheet)?.addEventListener('click', () => {
+      form.elements.quantity.value = Math.min(20, Number(form.elements.quantity.value) + 1);
+      updateTotal();
+    });
+    $('[data-product-options]', sheet)?.addEventListener('change', updateTotal);
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       const data = new FormData(form);
