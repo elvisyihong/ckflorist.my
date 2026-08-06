@@ -59,8 +59,11 @@ h3 { font-size: clamp(1.25rem, 2vw, 1.8rem); line-height: 1.12; }
 .site-header { position: fixed; top: .65rem; left: 50%; z-index: 100; width: calc(100% - 1rem); height: 4.5rem; padding: .65rem .75rem .65rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; transform: translateX(-50%); border: 1px solid rgba(255,255,255,.35); border-radius: 999px; background: rgba(255,253,248,.84); box-shadow: 0 12px 40px rgba(16,44,36,.08); backdrop-filter: blur(18px); transition: background .25s, transform .25s; }
 .brand { display: inline-flex; align-items: center; gap: .55rem; color: var(--ink); font-size: .92rem; font-weight: 600; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
 .brand span { display: grid; width: 2.55rem; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--ink); color: var(--ivory); font-family: var(--font-display); font-size: 1rem; letter-spacing: 0; }
+.brand-logo { width: auto; max-width: 7rem; height: 3.1rem; padding: .16rem; object-fit: contain; border: 1px solid rgba(23,55,45,.12); border-radius: 50%; background: white; }
 .brand-light { color: var(--ivory); }
 .brand-light span { background: var(--ivory); color: var(--ink); }
+.admin-brand { align-items: flex-end; }
+.admin-brand small { margin-left: -.35rem; color: rgba(255,255,255,.6); font-size: .6rem; letter-spacing: .12em; }
 .desktop-nav { display: none; }
 .nav-selection { display: none; }
 .menu-toggle { display: grid; width: 3.1rem; height: 3.1rem; padding: 0; place-content: center; gap: .35rem; border: 0; border-radius: 50%; background: var(--ink); }
@@ -328,11 +331,13 @@ fieldset.field { padding: 0; border: 0; }
 .login-card > div { margin: 3rem 0 2rem; }
 .login-card h1 { font-size: 3.5rem; }
 .login-card form { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+.login-card .brand-logo { max-width: 8rem; height: 5rem; padding: .25rem; }
 .maintenance-body { min-height: 100svh; background: var(--forest-deep); color: var(--ivory); }
 .maintenance-body::before { opacity: .08; }
 .maintenance-shell { width: min(100% - 1.5rem, 62rem); margin-inline: auto; padding: 2rem 0 5rem; }
 .maintenance-intro { padding: 1rem .25rem 4rem; }
 .maintenance-intro .brand { margin-bottom: 6rem; }
+.maintenance-intro .brand-logo { max-width: 10rem; height: 7rem; padding: .35rem; }
 .maintenance-intro .eyebrow { color: var(--blush); }
 .maintenance-intro h1 { max-width: 12ch; margin-bottom: 1.25rem; font-size: clamp(3.3rem, 11vw, 7.5rem); }
 .maintenance-intro > p:last-child { max-width: 42rem; color: rgba(255,255,255,.72); font-size: 1.1rem; }
@@ -389,6 +394,16 @@ fieldset.field { padding: 0; border: 0; }
 .maintenance-image-actions { grid-column: 1 / -1; display: flex; gap: .45rem; }
 .maintenance-image-actions .button:last-child { margin-left: auto; }
 .field-help { margin: 1rem 0 0; color: var(--muted); font-size: .8rem; }
+.brand-settings-head p:last-child { max-width: 48rem; color: var(--muted); }
+.brand-asset-grid { display: grid; gap: 1rem; }
+.brand-asset-card { padding: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; border: 1px solid var(--line); border-radius: 1rem; background: var(--ivory); }
+.brand-asset-card > div:nth-child(2) { flex: 1 1 12rem; }
+.brand-asset-card h3 { margin-bottom: .15rem; font-family: var(--font-ui); font-size: 1rem; }
+.brand-asset-card p { margin-bottom: 0; color: var(--muted); font-size: .8rem; }
+.brand-asset-preview { width: 6rem; height: 6rem; display: grid; flex: 0 0 auto; place-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 1rem; background: white; }
+.brand-asset-preview img { width: 100%; height: 100%; padding: .3rem; object-fit: contain; }
+.brand-asset-preview span { display: grid; width: 3.5rem; aspect-ratio: 1; place-items: center; border-radius: 50%; background: var(--ink); color: var(--ivory); font-family: var(--font-display); }
+.brand-asset-preview-small { width: 4.5rem; height: 4.5rem; border-radius: .85rem; }
 .admin-detail-grid { display: grid; gap: 1rem; }
 .admin-dl > div { padding: .7rem 0; display: grid; grid-template-columns: 8rem 1fr; border-bottom: 1px solid var(--line); }
 .admin-dl dt { color: var(--muted); }
@@ -404,6 +419,7 @@ fieldset.field { padding: 0; border: 0; }
   .maintenance-image-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .maintenance-image-item { grid-template-columns: 6rem minmax(0,1fr); }
   .maintenance-image-item > img { width: 6rem; height: 7.6rem; }
+  .brand-asset-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .section-wrap { width: min(100% - 3rem, 90rem); }
   .site-header { top: 1rem; width: calc(100% - 2rem); padding-inline: 1.2rem; }
   .hero { min-height: 56rem; padding: 10rem 3rem 5rem; }
@@ -487,6 +503,7 @@ fieldset.field { padding: 0; border: 0; }
   .toast-region { bottom: 1rem; }
   .admin-sidebar { position: fixed; inset: 0 auto 0 0; width: 16rem; padding: 1.5rem; display: block; overflow-y: auto; background: var(--forest-deep); color: var(--ivory); }
   .admin-sidebar nav { margin-top: 2.5rem; display: grid; gap: .15rem; }
+  .admin-sidebar .brand-logo { max-width: 7rem; height: 4.25rem; padding: .25rem; }
   .admin-sidebar nav a { padding: .55rem .65rem; border-radius: .5rem; color: rgba(255,255,255,.72); font-size: .8rem; text-decoration: none; }
   .admin-sidebar nav a:hover { background: rgba(255,255,255,.08); color: white; }
   .admin-frame { margin-left: 16rem; }

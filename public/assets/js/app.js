@@ -366,6 +366,59 @@
     sync();
   }
 
+  function initBrandingAdmin() {
+    const form = $('[data-brand-settings]');
+    if (!form) return;
+    const status = $('[data-brand-upload-status]', form);
+
+    function card(key) { return $(`[data-brand-asset="${key}"]`, form); }
+    function setAsset(key, path) {
+      const root = card(key);
+      const value = $('[data-brand-value]', root);
+      const preview = $('[data-brand-preview]', root);
+      const placeholder = $('[data-brand-placeholder]', root);
+      value.value = path;
+      preview.src = path;
+      preview.hidden = path === '';
+      placeholder.hidden = path !== '';
+    }
+
+    $$('[data-brand-upload]', form).forEach((input) => input.addEventListener('change', async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const key = input.dataset.brandUpload;
+      input.disabled = true;
+      status.textContent = `Uploading ${key}…`;
+      try {
+        const body = new FormData();
+        body.append('image', file);
+        body.append('alt_text', key === 'logo' ? 'CK Florist logo' : 'CK Florist favicon');
+        const media = await api('/admin/uploads', { method: 'POST', body });
+        setAsset(key, media.path);
+        status.textContent = `${key === 'logo' ? 'Logo' : 'Favicon'} uploaded. Save settings to publish it.`;
+        toast('Brand image uploaded. Save settings when ready.');
+      } catch (error) {
+        status.textContent = error.message;
+        toast(error.message, 'error');
+      } finally {
+        input.value = '';
+        input.disabled = false;
+      }
+    }));
+
+    $$('[data-brand-remove]', form).forEach((button) => button.addEventListener('click', () => {
+      setAsset(button.dataset.brandRemove, '');
+      status.textContent = 'Save settings to confirm this removal.';
+    }));
+
+    $('[data-brand-use-logo]', form)?.addEventListener('click', () => {
+      const logo = $('[data-brand-value]', card('logo')).value;
+      if (!logo) { toast('Upload a shop logo first.', 'error'); return; }
+      setAsset('favicon', logo);
+      status.textContent = 'The favicon will use the shop logo. Save settings to publish it.';
+    });
+  }
+
   function initMotion() {
     if (!window.gsap || !window.ScrollTrigger || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     window.gsap.registerPlugin(window.ScrollTrigger);
@@ -390,6 +443,7 @@
   initBuilder();
   initSelection();
   initMaintenanceAdmin();
+  initBrandingAdmin();
   initMotion();
   if (window.ckfFlash) toast(window.ckfFlash.message, window.ckfFlash.type);
 })();

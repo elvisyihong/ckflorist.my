@@ -1,6 +1,6 @@
 <main class="maintenance-shell">
     <header class="maintenance-intro">
-        <div class="brand brand-light" aria-label="<?= e($settings['business_name'] ?? 'CK Florist') ?>"><span>CK</span> Florist</div>
+        <div class="brand brand-light" aria-label="<?= e($settings['business_name'] ?? 'CK Florist') ?>"><?= brand_mark($settings) ?></div>
         <p class="eyebrow">Website maintenance</p>
         <h1><?= e($settings['maintenance_title'] ?? 'Our menu is available') ?></h1>
         <?php if (!empty($settings['maintenance_message'])): ?>

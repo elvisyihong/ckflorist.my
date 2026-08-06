@@ -6,6 +6,7 @@ use App\Support\DemoData;
 $settings = $settings ?? DemoData::settings();
 $title = $title ?? 'CK Florist';
 $description = $description ?? 'Florist craft and café warmth in Brunei. Browse inspiration, customise a bouquet, and send a structured WhatsApp enquiry.';
+$favicon = brand_favicon($settings);
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,6 +17,7 @@ $description = $description ?? 'Florist craft and café warmth in Brunei. Browse
     <meta name="description" content="<?= e($description) ?>">
     <meta name="csrf-token" content="<?= e(Csrf::token()) ?>">
     <title><?= e($title) ?> · <?= e($settings['business_name'] ?? 'CK Florist') ?></title>
+    <?php if ($favicon !== ''): ?><link rel="icon" href="<?= e($favicon) ?>"><link rel="apple-touch-icon" href="<?= e($favicon) ?>"><?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&amp;display=swap" rel="stylesheet">
@@ -29,7 +31,7 @@ $description = $description ?? 'Florist craft and café warmth in Brunei. Browse
 <body class="page-<?= e(trim(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/', '/') ?: 'home') ?>">
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="site-header" data-header>
-    <a class="brand" href="/" aria-label="CK Florist home"><span>CK</span> Florist</a>
+    <a class="brand" href="/" aria-label="CK Florist home"><?= brand_mark($settings) ?></a>
     <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="/florist">Florist</a><a href="/customise">Customise</a><a href="/cafe">Café</a><a href="/gallery">Gallery</a><a href="/about">Our story</a>
     </nav>
@@ -48,7 +50,7 @@ $description = $description ?? 'Florist craft and café warmth in Brunei. Browse
         <a class="button button-light" href="/customise">Begin your bouquet</a>
     </div>
     <div class="footer-grid">
-        <div><a class="brand brand-light" href="/"><span>CK</span> Florist</a><p>Florist craft and café warmth, made for thoughtful moments.</p></div>
+        <div><a class="brand brand-light" href="/"><?= brand_mark($settings) ?></a><p>Florist craft and café warmth, made for thoughtful moments.</p></div>
         <div><h2>Visit</h2><p><?= nl2br(e($settings['address'] ?? 'Brunei Darussalam')) ?></p><a href="/contact">Hours and directions</a></div>
         <div><h2>Details</h2><a href="/policies/terms">Terms</a><a href="/policies/privacy">Privacy</a><a href="/policies/cancellation">Cancellation</a><a href="/admin/login">Admin</a></div>
     </div>

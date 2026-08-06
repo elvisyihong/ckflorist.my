@@ -30,6 +30,40 @@ function asset(string $path): string
     return $url . '?v=' . rawurlencode($versions[$file]);
 }
 
+function brand_asset_url(array $settings, string $key = 'logo'): string
+{
+    $path = trim((string) ($settings[$key] ?? ''));
+    if ($path === '') {
+        return '';
+    }
+    if (str_starts_with($path, 'public/')) {
+        $path = '/' . $path;
+    }
+
+    return preg_match('#^/public/(?:assets|uploads)/[A-Za-z0-9._/-]+(?:\?v=[A-Za-z0-9._-]+)?$#', $path) ? $path : '';
+}
+
+function brand_mark(array $settings, string $label = 'CK Florist'): string
+{
+    $logo = brand_asset_url($settings, 'logo');
+    if ($logo !== '') {
+        return '<img class="brand-logo" src="' . e($logo) . '" alt="' . e($label) . '">';
+    }
+
+    return '<span aria-hidden="true">CK</span> ' . e($label === 'CK Florist' ? 'Florist' : $label);
+}
+
+function brand_favicon(array $settings): string
+{
+    return brand_asset_url($settings, 'favicon') ?: brand_asset_url($settings, 'logo');
+}
+
+function shop_settings(): array
+{
+    static $settings = null;
+    return $settings ??= (new App\Repositories\SettingsRepository())->all();
+}
+
 function app_url(string $path = '/'): string
 {
     return rtrim(Env::get('APP_URL', ''), '/') . '/' . ltrim($path, '/');
