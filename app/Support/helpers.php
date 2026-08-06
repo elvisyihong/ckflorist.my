@@ -18,7 +18,16 @@ function csrf_field(): string
 
 function asset(string $path): string
 {
-    return '/public/assets/' . ltrim($path, '/');
+    $path = ltrim($path, '/');
+    $url = '/public/assets/' . $path;
+    $file = BASE_PATH . $url;
+    if (!is_file($file)) {
+        return $url;
+    }
+
+    static $versions = [];
+    $versions[$file] ??= (string) filemtime($file);
+    return $url . '?v=' . rawurlencode($versions[$file]);
 }
 
 function app_url(string $path = '/'): string
@@ -53,4 +62,3 @@ function app_config(string $key, mixed $default = null): mixed
     }
     return $value;
 }
-
