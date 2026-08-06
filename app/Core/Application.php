@@ -37,7 +37,7 @@ final class Application
         $request = Request::capture();
         try {
             $settings = $this->make(SettingsRepository::class)->all();
-            if ($this->make(MaintenanceMode::class)->shouldIntercept($request->path(), $settings)) {
+            if ($this->make(MaintenanceMode::class)->shouldIntercept($request->path(), $settings, Auth::user() !== null)) {
                 $this->make(MaintenanceController::class)->show($request);
                 return;
             }

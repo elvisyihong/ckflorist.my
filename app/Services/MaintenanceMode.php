@@ -11,9 +11,9 @@ final class MaintenanceMode
         return filter_var($settings['maintenance_mode'] ?? false, FILTER_VALIDATE_BOOLEAN);
     }
 
-    public function shouldIntercept(string $path, array $settings): bool
+    public function shouldIntercept(string $path, array $settings, bool $isAdmin = false): bool
     {
-        if (!$this->isEnabled($settings)) {
+        if (!$this->isEnabled($settings) || $isAdmin) {
             return false;
         }
 
