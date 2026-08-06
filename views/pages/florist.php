@@ -1,0 +1,6 @@
+<header class="page-hero"><p class="eyebrow">Inspiration, not inventory</p><h1>Find a visual language for your flowers.</h1><p>Every sample is a reference. We use your chosen flowers, palette, occasion and budget to shape the final conversation.</p></header>
+<section class="catalogue section-wrap">
+    <aside class="filter-panel"><h2>Flower</h2><nav aria-label="Filter by flower"><a class="chip <?= !$activeFlower ? 'is-active' : '' ?>" href="/florist">All</a><?php foreach($flowers as $flower): ?><a class="chip <?= $activeFlower === (int)$flower['id'] ? 'is-active' : '' ?>" href="/florist?flower=<?= (int)$flower['id'] ?>"><?= e($flower['name']) ?></a><?php endforeach; ?></nav><p class="disclaimer-card"><?= e($settings['florist_disclaimer']) ?></p></aside>
+    <div><div class="catalogue-head"><p><?= count($samples) ?> inspiration <?= count($samples) === 1 ? 'study' : 'studies' ?></p><a href="/customise">Match several flowers</a></div><?php if ($samples): ?><div class="sample-grid"><?php foreach($samples as $sample) require BASE_PATH.'/views/components/sample-card.php'; ?></div><?php else: ?><div class="empty-state"><h2>No studies match this flower yet.</h2><p>Choose another flower or let our florist work from your brief.</p><a class="button" href="/customise">Customise a bouquet</a></div><?php endif; ?></div>
+</section>
+

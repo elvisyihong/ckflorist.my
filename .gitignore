@@ -1,3 +1,11 @@
 # Local deployment credentials must never be committed.
 /scripts/.env
-
+.DS_Store
+**/.DS_Store
+/.env
+/storage/cache/*
+/storage/logs/*
+/storage/uploads/*
+!/storage/cache/.gitkeep
+!/storage/logs/.gitkeep
+!/storage/uploads/.gitkeep
