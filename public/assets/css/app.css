@@ -408,10 +408,25 @@ fieldset.field { padding: 0; border: 0; }
 .maintenance-menu-list figcaption { padding: .8rem .25rem 0; color: rgba(255,255,255,.54); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
 .maintenance-empty { padding: 4rem 1rem; border: 1px solid rgba(255,255,255,.2); border-radius: 1rem; color: rgba(255,255,255,.72); text-align: center; }
 .admin-body { background: #f3f0e8; }
-.admin-sidebar { display: none; }
+.admin-body.admin-nav-open { overflow: hidden; }
+.admin-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 120; width: min(19rem, 86vw); padding: 1.2rem; display: block; overflow-y: auto; visibility: hidden; transform: translateX(-102%); background: var(--forest-deep); color: var(--ivory); box-shadow: 1.5rem 0 4rem rgba(16,44,36,.28); transition: transform .24s ease, visibility .24s; }
+.admin-sidebar.is-open { visibility: visible; transform: translateX(0); }
+.admin-sidebar-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.admin-sidebar .brand-logo { max-width: 7rem; height: 4rem; padding: .25rem; }
+.admin-sidebar nav { margin-top: 1.5rem; display: grid; gap: .15rem; }
+.admin-sidebar nav a { padding: .62rem .7rem; border-radius: .55rem; color: rgba(255,255,255,.72); font-size: .82rem; text-decoration: none; transition: background .2s, color .2s, transform .2s; }
+.admin-sidebar nav a:hover { background: rgba(255,255,255,.08); color: white; transform: translateX(.15rem); }
+.admin-sidebar nav a[aria-current="page"] { background: var(--ivory); color: var(--forest-deep); font-weight: 600; }
+.admin-nav-close { width: 2.7rem; height: 2.7rem; padding: 0; flex: 0 0 auto; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; background: rgba(255,255,255,.08); color: white; font-size: 1.6rem; line-height: 1; }
+.admin-nav-backdrop { position: fixed; inset: 0; z-index: 110; width: 100%; height: 100%; padding: 0; border: 0; background: rgba(16,44,36,.55); backdrop-filter: blur(3px); }
 .admin-frame { min-height: 100vh; }
-.admin-topbar { min-height: 4.5rem; padding: .75rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: var(--paper); }
+.admin-topbar { position: sticky; top: 0; z-index: 30; min-height: 4.5rem; padding: .75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; border-bottom: 1px solid var(--line); background: rgba(255,253,248,.95); backdrop-filter: blur(14px); }
+.admin-topbar-identity { min-width: 0; display: flex; align-items: center; gap: .75rem; }
+.admin-topbar-identity > div { min-width: 0; }
 .admin-topbar p { margin: 0; color: var(--muted); font-size: .7rem; text-transform: uppercase; }
+.admin-topbar strong { display: block; overflow: hidden; font-size: .88rem; text-overflow: ellipsis; white-space: nowrap; }
+.admin-nav-toggle { width: 2.8rem; height: 2.8rem; padding: 0; display: grid; flex: 0 0 auto; place-content: center; gap: .28rem; border: 0; border-radius: .75rem; background: var(--forest-deep); }
+.admin-nav-toggle i { width: 1.15rem; height: 1.5px; display: block; border-radius: 1px; background: var(--ivory); }
 .admin-main { padding: 1.5rem 1rem 6rem; }
 .admin-page-head { margin-bottom: 2rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .admin-page-head h1 { margin: .25rem 0 0; font-size: clamp(2.7rem, 6vw, 5rem); }
@@ -569,11 +584,14 @@ fieldset.field { padding: 0; border: 0; }
   .builder-actions { left: 0; padding-inline: max(2rem, calc((100vw - 90rem)/2)); }
   .site-footer { padding: 8rem max(3rem, calc((100vw - 90rem)/2)) 3rem; }
   .toast-region { bottom: 1rem; }
-  .admin-sidebar { position: fixed; inset: 0 auto 0 0; width: 16rem; padding: 1.5rem; display: block; overflow-y: auto; background: var(--forest-deep); color: var(--ivory); }
+  .admin-body.admin-nav-open { overflow: auto; }
+  .admin-sidebar { width: 16rem; padding: 1.5rem; visibility: visible; transform: none; box-shadow: none; }
   .admin-sidebar nav { margin-top: 2.5rem; display: grid; gap: .15rem; }
   .admin-sidebar .brand-logo { max-width: 7rem; height: 4.25rem; padding: .25rem; }
   .admin-sidebar nav a { padding: .55rem .65rem; border-radius: .5rem; color: rgba(255,255,255,.72); font-size: .8rem; text-decoration: none; }
   .admin-sidebar nav a:hover { background: rgba(255,255,255,.08); color: white; }
+  .admin-sidebar nav a[aria-current="page"] { background: var(--ivory); color: var(--forest-deep); }
+  .admin-nav-toggle, .admin-nav-close, .admin-nav-backdrop { display: none; }
   .admin-frame { margin-left: 16rem; }
   .admin-topbar { padding-inline: 2rem; }
   .admin-main { padding: 2.5rem 2rem 6rem; }

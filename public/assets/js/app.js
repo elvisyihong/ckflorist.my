@@ -48,6 +48,31 @@
     document.body.style.overflow = open ? '' : 'hidden';
   });
 
+  const adminNav = $('[data-admin-navigation]');
+  const adminNavToggle = $('[data-admin-nav-toggle]');
+  const adminNavClose = $('[data-admin-nav-close]');
+  const adminNavBackdrop = $('[data-admin-nav-backdrop]');
+  const adminDesktop = window.matchMedia('(min-width: 1040px)');
+
+  function setAdminNavigation(open, returnFocus = false) {
+    if (!adminNav || !adminNavToggle || !adminNavBackdrop) return;
+    const mobileOpen = open && !adminDesktop.matches;
+    adminNav.classList.toggle('is-open', mobileOpen);
+    adminNavToggle.setAttribute('aria-expanded', String(mobileOpen));
+    adminNavBackdrop.hidden = !mobileOpen;
+    document.body.classList.toggle('admin-nav-open', mobileOpen);
+    if (mobileOpen) adminNavClose?.focus();
+    else if (returnFocus) adminNavToggle.focus();
+  }
+
+  adminNavToggle?.addEventListener('click', () => setAdminNavigation(adminNavToggle.getAttribute('aria-expanded') !== 'true'));
+  adminNavClose?.addEventListener('click', () => setAdminNavigation(false, true));
+  adminNavBackdrop?.addEventListener('click', () => setAdminNavigation(false, true));
+  adminDesktop.addEventListener('change', () => setAdminNavigation(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && adminNavToggle?.getAttribute('aria-expanded') === 'true') setAdminNavigation(false, true);
+  });
+
   $$('[name="fulfilment_method"]').forEach((input) => input.addEventListener('change', () => {
     $$('[data-delivery-field]').forEach((field) => {
       const delivery = $('[name="fulfilment_method"]:checked')?.value === 'delivery';
